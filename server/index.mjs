@@ -1,10 +1,15 @@
 import { createServer } from "http";
-import { createWriteStream } from "fs";
+import { createWriteStream, existsSync, mkdirSync } from "fs";
 import { createGunzip } from "zlib";
 import { basename, join } from "path";
+
+const DEST_FOLDER = "received_files";
+
 const server = createServer((req, res) => {
+  !existsSync(DEST_FOLDER) ? mkdirSync(DEST_FOLDER) : undefined;
+
   const filename = basename(req.headers["x-filename"]);
-  const destFilename = join("received_files", filename);
+  const destFilename = join(DEST_FOLDER, filename);
   console.log(`File request received: ${filename}`);
   req
     .pipe(createGunzip())
